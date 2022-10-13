@@ -20,6 +20,8 @@ const observadorFunction = new IntersectionObserver((entradas, observer) => {
     threshold: 1.0
 });
 
+
+
 const apiID ='p127toSTO3ZLM39q1ZytbncxL9lFFDYQ';
 const URL = 'https://api.giphy.com/v1/gifs/';
 const maximoBusquedas =  3
@@ -29,6 +31,7 @@ const resultados = document.querySelector('#resultados');
 const formulario = document.querySelector('#formulario');
 const input = document.querySelector('#input');
 const buttonTop = document.querySelector('.buttonTop');
+const busquedas = document.querySelector('#busquedas');
 
 let valueInput = '';
 
@@ -90,7 +93,7 @@ const searchFunction = () => {
 
     } else {
         OFFSET = 0
-        document.getElementById('alert-error')?.remove();
+        document.getElementById('alert-error');
         input.classList.remove('error_input');
         searchHistoria(valueInput);
         crearHistorial(valueInput);
@@ -119,23 +122,34 @@ const lastSearchFunction = (e) => {
 
     searchHistoria(valueInput);
 }
+const alertMessage = (msg) => {
+    const divData = document.createElement('div');
+    divData.classList.add('data');
+    const pSubData = document.createElement('p');
+    pSubData.textContent = msg
+    pSubData.classList.add('sub');
 
+    divData.append(pSubData);
+    const mostrarAlerta = document.getElementById('mostrar_alerta');
+    // alertSHow.innerHTML = elem;
+    mostrarAlerta.append(divData);
+}
 const searchHistoria = async (searchParam) => {
 
     const data = await getApiGif(searchParam);
 
     if (data.length === 0) {
-        alertMessage('no existen resultados')
+        alertMessage('No existen resultados, intenta con otra búsqueda')
         return
     }
 
     if (OFFSET == 0) {
-        busquedas.innerHTML = '';
+        resultados.innerHTML = '';
     }
 
     const elem = data.map(item => figure(item));
 
-  busquedas.append(...elem);
+  resultados.append(...elem);
 
     if (lastGifTemplate) {
         observadorFunction.unobserve(lastGifTemplate);
@@ -161,20 +175,20 @@ const crearHistorial = (searchParam) => {
 const updateSearchHistory = () => {
     const history = JSON.parse(localStorage.getItem('searchHistoria') || '[]');
 
-    resultados.innerHTML = '';
+    busquedas.innerHTML = '';
 
     let div = document.createElement('div');
 
-    resultados.append(history.map(a => {
+    busquedas.append(history.map(a => {
         let span = document.createElement('span');
         span.textContent = a;
         span.className = 'texto';
         span.value = a
-     resultados.appendChild(span);
+     busquedas.appendChild(span);
         span.addEventListener('click', lastSearchFunction);
     }).join(''));
 
-    // searchs.appendChild(div);
+
 }
 const scrollFunction = () => {
     if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
